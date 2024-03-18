@@ -4,6 +4,5 @@
   tasks:
     - name: Create user
       user:
-        name: alex3
+        name: alex
         state: present
-      become: true
