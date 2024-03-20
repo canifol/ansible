@@ -2,32 +2,51 @@
 - name: Тестовое задание
   hosts: all
   tasks:
-    - name: Установка пакетов htop, tmux, jq
+    - name: Установка пакетов tmux, jq
       ansible.builtin.yum:
         name:
-          - htop
           - tmux
           - jq
         state: present
       become: yes
 
+    - name: Добавим репо EPEL для установки HTOP
+      ansible.builtin.yum:
+        name:
+          - epel-release 
+        state: present
+      become: yes
+    
+    - name: Установка HTOP
+      ansible.builtin.dnf:
+        name:
+          - htop #так не ставится, нужн онастраивать иначе 
+        state: present
+      become: yes  
+
     - name: Работа с SSHD
       block:
-        - name: Копирование конфигурационного файла sshd_config (на всякий случай)
-          ansible.builtin.copy:
-            src: /etc/ssh/sshd_config
-            dest: /etc/ssh/sshd_config.backup
 
         - name: Изменяем конфиг файла
           ansible.builtin.lineinfile:
             path: /etc/ssh/sshd_config
-            regexp: "{{ item.chto }}"
-            line: "{{ item.na_chto }}"
+            regexp: '^PermitRootLogin'
+            line: 'PermitRootLogin no'
             state: present
-            loop:
-              - { chto: '^PermitRootLogin', na_chto: 'PermitRootLogin no' }
-              - { chto: '^PasswordAuthentication', na_chto: 'PasswordAuthentication no' }
-              - { chto: '^(#)*PubkeyAuthentication', na_chto: 'PubkeyAuthentication yes' }
+
+        - name: Изменяем конфиг файла 2
+          ansible.builtin.lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: '^PasswordAuthentication'
+            line: 'PasswordAuthentication no'
+            state: present
+        
+        - name: Изменяем конфиг файла 3
+          ansible.builtin.lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: '^(#)*PubkeyAuthentication'
+            line: 'PubkeyAuthentication yes'
+            state: present
 
         - name: Рестарт sshd
           ansible.builtin.service:

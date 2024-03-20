@@ -1,0 +1,11 @@
+---
+- name: Установка репозитория для HTOP
+  hosts: all
+  become: yes
+  tasks:
+    - name: Изменяем конфиг файла
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
