@@ -1,0 +1,11 @@
+---
+- name: Тестовое задание
+  hosts: all
+  tasks:
+    - name: Установка пакетов htop, tmux, jq
+      ansible.builtin.yum:
+        name:
+          - tmux
+          - jq
+        state: present
+      become: yes
