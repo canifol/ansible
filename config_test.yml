@@ -1,7 +1,7 @@
 ---
 - name: Тестовое задание
   hosts: all
-  tasks: 
+  tasks:
     - name: Установка пакетов htop, tmux, jq
       ansible.builtin.yum:
       name: "{{ item.package }}"
@@ -30,8 +30,8 @@
               - { chto: '^PasswordAuthentication', na_chto: 'PasswordAuthentication no' }
               - { chto: '^(#)*PubkeyAuthentication', na_chto: 'PubkeyAuthentication yes' }
 
-          - name: Рестарт sshd
-            ansible.builtin.service:
-              name: sshd
-              state: restarted
+        - name: Рестарт sshd
+          ansible.builtin.service:
+            name: sshd
+            state: restarted
       become: yes
