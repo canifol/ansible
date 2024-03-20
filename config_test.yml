@@ -1,0 +1,37 @@
+---
+- name: Тестовое задание
+  hosts: all
+  tasks: 
+    - name: Установка пакетов htop, tmux, jq
+      ansible.builtin.yum:
+      name: "{{ item.package }}"
+      state: present
+      loop:
+       - { package: 'htop' }
+       - { package: 'tmux' }
+       - { package: 'jq' }
+      become: yes
+
+    - name: Работа с SSHD
+      block:
+        - name: Копирование конфигурационного файла sshd_config (на всякий случай)
+          ansible.builtin.copy:
+            src: /etc/ssh/sshd_config
+            dest: /etc/ssh/sshd_config.backup
+
+        - name: Изменяем конфиг файла
+          ansible.builtin.lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: "{{ item.chto }}"
+            line: "{{ item.na_chto }}"
+            state: present
+            loop:
+              - { chto: '^PermitRootLogin', na_chto: 'PermitRootLogin no' }
+              - { chto: '^PasswordAuthentication', na_chto: 'PasswordAuthentication no' }
+              - { chto: '^(#)*PubkeyAuthentication', na_chto: 'PubkeyAuthentication yes' }
+
+          - name: Рестарт sshd
+            ansible.builtin.service:
+              name: sshd
+              state: restarted
+      become: yes
