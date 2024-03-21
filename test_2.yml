@@ -1,0 +1,7 @@
+---
+- name: Тестовый плэйбук для Jenkins
+  hosts: all
+  tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "Test debug"
